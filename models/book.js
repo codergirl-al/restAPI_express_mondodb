@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
 
+
+//Creating the book schema (blueprint)
 const bookSchema = new mongoose.Schema({
     title: {
         type: String,

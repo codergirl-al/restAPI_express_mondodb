@@ -3,7 +3,7 @@ const book = require('../models/book')
 const router = express.Router()
 const Book = require('../models/book')
 
-//Get all books from db
+//Get all books from database
 router.get('/', async(req, res, next) => {
     try {
         const books = await Book.find()
@@ -13,7 +13,7 @@ router.get('/', async(req, res, next) => {
     }
 })
 
-//Post book to db
+//Post book to database
 router.post('/', async(req, res, next) => {
     try {
         const currentBook = new Book({
@@ -29,6 +29,7 @@ router.post('/', async(req, res, next) => {
     }
 })
 
+//Find book by id
 router.get('/:id', async(req, res, next) => {
     try {
         const book = await Book.findById(req.params.id)
@@ -38,7 +39,7 @@ router.get('/:id', async(req, res, next) => {
     }
 })
 
-//Edit book by id in db
+//Edit the book's read status by id in database
 router.put('/:id', async(req, res, next) => {
     try {
         const book = await Book.findById(req.params.id)
@@ -49,7 +50,7 @@ router.put('/:id', async(req, res, next) => {
         next(new Error("Can't edit book."))
     }
 })
-//Delete book from db
+//Delete book from database
 router.delete('/:id', async(req, res, next) => {
     try {
         Book.findByIdAndRemove({_id: req.params.id}).then(function(book) {
