@@ -3,55 +3,61 @@ const book = require('../models/book')
 const router = express.Router()
 const Book = require('../models/book')
 
-router.get('/', async(req, res) => {
+//Get all books from db
+router.get('/', async(req, res, next) => {
     try {
         const books = await Book.find()
         res.json(books)
     } catch(err) {
-        res.send('Error' + err)
+        next(new Error("Can't get a list of all books"))
     }
 })
 
-router.post('/', async(req, res) => {
-    const currentBook = new Book({
-        title: req.body.title,
-        author: req.body.author,
-        rating: req.body.rating,
-        read: req.body.read
-    })
-
+//Post book to db
+router.post('/', async(req, res, next) => {
     try {
+        const currentBook = new Book({
+            title: req.body.title,
+            author: req.body.author,
+            rating: req.body.rating,
+            read: req.body.read
+        })
         const a1 = await currentBook.save()
         res.json(a1)
-    }catch(err) {
-        res.send('Error' + err)
+    } catch(err) {
+        next(new Error("Can't add book to database"))
     }
 })
 
-router.get('/:id', async(req, res) => {
-    try{
+router.get('/:id', async(req, res, next) => {
+    try {
         const book = await Book.findById(req.params.id)
         res.json(book)
     } catch(err) {
-        res.send('Error ' + err)
+        next(new Error("Can't find book with the given id"))
     }
 })
 
-router.put('/:id', async(req, res) => {
+//Edit book by id in db
+router.put('/:id', async(req, res, next) => {
     try {
         const book = await Book.findById(req.params.id)
         book.read = req.body.read
         const a1 = await book.save()
         res.json(book)
     } catch(err) {
-        res.send('Error ' + err)
+        next(new Error("Can't edit book."))
     }
 })
-
-router.delete('/:id', async(req, res) => {
-    Book.findByIdAndRemove({_id: req.params.id}).then(function(book) {
-        res.json(book)
-    })
+//Delete book from db
+router.delete('/:id', async(req, res, next) => {
+    try {
+        Book.findByIdAndRemove({_id: req.params.id}).then(function(book) {
+            res.json(book)
+        })
+    } catch(err) {
+        next(new Error("Can't remove a non-existing book"))
+    }
 })
 
 module.exports = router
