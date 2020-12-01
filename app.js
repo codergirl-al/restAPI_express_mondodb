@@ -1,45 +1,43 @@
-const express = require('express')
+const express = require("express");
+const bodyParser = require("body-parser");
+const cors = require("cors");
 const mongoose = require('mongoose')
-const bodyParser = require('body-parser');
-
 const url = 'mongodb://localhost/books'
 
 const app = express()
 
+
 //Connect to database
-mongoose.connect(url, {useNewUrlParser:true})
-const con = mongoose.connection
+mongoose.connect(url, {
+  useNewUrlParser: true
+}).then(() => {
+  console.log('Database connected sucessfully !')
+},
+  error => {
+      console.log('Database could not be connected : ' + error)
+  }
+)
 
-con.on('open', () => {
-    console.log('CONNECTED')
-})
+var corsOptions = {
+  origin: "http://localhost:8080"
+};
 
+app.use(cors());
+
+// parse requests of content-type - application/json
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+
+// parse requests of content-type - application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.json())
 
-const bookRouter = require('./routes/books')
-app.use('/books', bookRouter)
+const bookRouter = require('./routes/book.routes');
+const { books } = require("./models");
+app.use(bookRouter)
 
-//Error handling
-app.use((req, res, next) => {
-    const err = new Error("Not found")
-    err.status = 404
-    next(err)
-})
-
-app.use((err, req, res, next) => {
-    res.status(err.status || 500)
-    res.json({
-        error: {
-            status: err.status || 500,
-            message: err.message
-        }
-    })
-})
-
-//in Postman: http://localhost:9000/books
-app.listen(9000, () => {
-    console.log('SERVER STARTED')
-})
+// set port, listen for requests
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}.`);
+});
